@@ -1,0 +1,24 @@
+{% extends "package/read_base.html" %}
+
+{% block subtitle %}{{ _('Dataset Sources') }} {% endblock %}
+
+{% block primary_content_inner %}
+  {% if h.check_access('package_update') %}
+    <form method="post" class="form-horizontal" id="source-add">
+      <input id="field-source" type="text" name="source_added" placeholder="Start typing dataset name or insert external link"
+            value="" class="control-medium" data-module="autocomplete"
+            data-module-source="/api/2/util/dataset/autocomplete?incomplete=?">
+      <input type="text" id="source-title" name="title_added" title="External link title" class="select2-container control-medium" style="width:786px; display:none" value="" placeholder="Type title of the external link">
+      <button type="submit" class="btn btn-primary" title="{{ _('Associate this source with this dataset') }}">{{ _('Add as dataset source') }}</button>
+    </form>
+  {% endif %}
+
+  <h2>{% block page_heading %}{{ _('Sources of {dataset_name}').format(dataset_name=h.dataset_display_name(c.pkg_dict)) }}{% endblock %}</h2>
+  {% block source_list %}
+    {% if c.source_list %}
+      {% snippet "mzp/snippets/source_list.html", sources=c.source_list, pkg_id=c.pkg_dict.name, show_remove=h.check_access('package_update') %}
+    {% else %}
+      <p class="empty">{{ _('There are no sources for this dataset') }}</p>
+    {% endif %}
+  {% endblock %}
+{% endblock %}

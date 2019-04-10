@@ -1,0 +1,34 @@
+{#
+Displays a single dataset of type 'showcase'.
+
+package        - A package to display.
+item_class     - The class name to use on the list item.
+truncate       - The length to trucate the description to (default: 180)
+truncate_title - The length to truncate the title to (default: 80).
+show_remove    - If True, show the remove button to remove showcase/dataset association.
+
+#}
+{% set truncate = truncate or 180 %}
+{% set truncate_title = truncate_title or 80 %}
+{% set title = source.title %}
+{% set url = source.link if source.is_external else h.url_for(controller='package', action='read', id=source.name) %}
+
+{% block package_item %}
+
+<li class="media-item">
+  {% block item_inner %}
+    {% block image %}
+      <img src="{{h.url_for_static('/base/images/placeholder-group.png') }}" alt="" class="media-image" style="width:100%">
+    {% endblock %}
+    {% block title %}
+      <h3 class="media-heading">{{ h.link_to(h.truncate(title, truncate_title),  url)}}</h3>
+    {% endblock %}
+    {% if show_remove %}
+      <form method="post"><input type="hidden" value="{{ source.source_id }}" name="remove_source_id" /><input value="{{ _('Remove') }}" type="submit" class="btn btn-danger btn-small media-edit" title="{{ _('Remove source from this dataset') }}"/></form>
+    {% endif %}
+  {% endblock %}
+</li>
+{% endblock %}
+{# {% if position is divisibleby 3 %}
+  <li class="clearfix js-hide"></li>
+{% endif %} #}

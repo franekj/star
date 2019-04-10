@@ -1,0 +1,23 @@
+{% ckan_extends %}
+
+{% block primary_content_inner %}
+  {{ super() }}
+  {% set dataset_extent = h.get_pkg_dict_extra(c.pkg_dict, 'spatial', '') %}
+  {% if dataset_extent %}
+    {% snippet "spatial/snippets/dataset_map.html", extent=dataset_extent %}
+  {% endif %}
+{% endblock %}
+
+{% block package_additional_info %}
+  {{ super() }}
+  {% set sources = h.get_package_sources(c.pkg_dict.id) %}
+  {% if sources %}
+      <h3>{{ _('Sources') }}</h3>
+      {% snippet "mzp/snippets/source_list.html", sources=sources, pkg_id=c.pkg_dict.name, show_remove=False %}
+  {% endif %}
+  {% set references = h.get_package_reference(c.pkg_dict.id) %}
+  {% if references %}
+      <h3>{{ _('Referenced by') }}</h3>
+      {% snippet "mzp/snippets/source_list.html", sources=references, pkg_id=c.pkg_dict.name, show_remove=False %}
+  {% endif %}
+{% endblock %}
