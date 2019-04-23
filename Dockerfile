@@ -56,6 +56,7 @@ RUN ckan-pip install -U pip && \
     ckan-pip install -r $CKAN_VENV/src/ckanext-dcat/requirements.txt && \
     ckan-pip install -e "git+https://github.com/ckan/ckanext-harvest.git#egg=ckanext-harvest" && \
     ckan-pip install -e "git+https://github.com/okfn/ckanext-disqus#egg=ckanext-disqus && \
+    ckan-pip install ckanext-datarequests && \
     ckan-pip install -r $CKAN_VENV/src/ckanext-harvest/pip-requirements.txt && \
     ckan-pip install -e $CKAN_VENV/src/ckanext-mzp && \
     ln -s $CKAN_VENV/src/ckan/ckan/config/who.ini $CKAN_CONFIG/who.ini && \
