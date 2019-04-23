@@ -76,5 +76,6 @@ ckanext-mapviews
 docker-compose exec ckan /usr/lib/ckan/venv/bin/paster --plugin=ckan user list -c /etc/ckan/production.ini
 
 docker-compose exec ckan /usr/lib/ckan/venv/bin/paster --plugin=ckan plugin-info -c /etc/ckan/production.ini >plugins.txt
+
    -> a tady to právě vyklopí hlášku že tam je nějaká chyba v pluginech
 
