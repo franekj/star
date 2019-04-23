@@ -79,3 +79,12 @@ docker-compose exec ckan /usr/lib/ckan/venv/bin/paster --plugin=ckan plugin-info
 
    -> a tady to právě vyklopí hlášku že tam je nějaká chyba v pluginech
 
+
+      do production.ini přidat:
+
+disqus.secret_key  = neRyfzRvowchXND2jk4R7s5RI0oOfJditJg4iVkhIPAnF9JA1pM6sjdXWugd3Iun
+
+disqus.public_key  = 6304de17f01e446caa79d4f19333927d
+
+disqus.name = t-star-env-cz
+
