@@ -88,3 +88,8 @@ disqus.public_key  = 6304de17f01e446caa79d4f19333927d
 
 disqus.name = t-star-env-cz
 
+
+ckan.datarequests.comments = true
+
+ckan.datarequests.show_datarequests_badge = true
+
