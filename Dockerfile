@@ -51,7 +51,7 @@ RUN ckan-pip install -U pip && \
     ckan-pip install -e $CKAN_VENV/src/ckan/ && \
     ckan-pip install -e "git+https://github.com/ckan/ckanext-spatial.git#egg=ckanext-spatial" && \
     ckan-pip install -r $CKAN_VENV/src/ckanext-spatial/pip-requirements.txt && \
-    ckan-pip install -e "git+https://github.com/kapucko/ckanext-hierarchy.git#egg=ckanext-hierarchy" && \
+    ckan-pip install -e "git+https://github.com/SYSNET-CZ/ckanext-hierarchy.git#egg=ckanext-hierarchy" && \
     ckan-pip install -e "git+https://github.com/ckan/ckanext-dcat.git#egg=ckanext-dcat" && \
     ckan-pip install -r $CKAN_VENV/src/ckanext-dcat/requirements.txt && \
     ckan-pip install -e "git+https://github.com/ckan/ckanext-harvest.git#egg=ckanext-harvest" && \
