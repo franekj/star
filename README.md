@@ -93,3 +93,13 @@ ckan.datarequests.comments = true
 
 ckan.datarequests.show_datarequests_badge = true
 
+
+## Internationalisation Settings
+
+ckan.locale_default = cs_CZ
+
+ckan.locale_order = cs_CZ en
+
+ckan.locales_offered =
+
+ckan.locales_filtered_out = en_GB
