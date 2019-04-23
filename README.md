@@ -5,6 +5,7 @@
 
 						nejdriv .env!
 cd project/ckan/contrib/docker/
+
 CKAN_SITE_ID=mzp_ckan
 CKAN_SITE_URL=https://t-star.env.cz
 CKAN_PORT=5000
