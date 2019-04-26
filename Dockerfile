@@ -48,13 +48,13 @@ RUN mkdir -p $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH && \
 # Setup CKAN
 ADD . $CKAN_VENV/src/ckan/
 RUN mv $CKAN_VENV/src/ckan/ckanext-mzp $CKAN_VENV/src
+RUN mv $CKAN_VENV/src/ckan/ckanext-hierarchy $CKAN_VENV/src
 RUN ckan-pip install -U pip && \
     ckan-pip install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirement-setuptools.txt && \
     ckan-pip install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirements.txt && \
     ckan-pip install -e $CKAN_VENV/src/ckan/ && \
     ckan-pip install -e "git+https://github.com/ckan/ckanext-spatial.git#egg=ckanext-spatial" && \
     ckan-pip install -r $CKAN_VENV/src/ckanext-spatial/pip-requirements.txt && \
-    ckan-pip install -e "git+https://github.com/SYSNET-CZ/ckanext-hierarchy.git#egg=ckanext-hierarchy" && \
     ckan-pip install -e "git+https://github.com/ckan/ckanext-dcat.git#egg=ckanext-dcat" && \
     ckan-pip install -r $CKAN_VENV/src/ckanext-dcat/requirements.txt && \
     ckan-pip install -e "git+https://github.com/ckan/ckanext-harvest.git#egg=ckanext-harvest" && \
@@ -63,6 +63,7 @@ RUN ckan-pip install -U pip && \
     ckan-pip install ckanext-datarequests && \
     ckan-pip install -r $CKAN_VENV/src/ckanext-harvest/pip-requirements.txt && \
     ckan-pip install -e $CKAN_VENV/src/ckanext-mzp && \
+    ckan-pip install -e $CKAN_VENV/src/ckanext-hierarchy && \
     ln -s $CKAN_VENV/src/ckan/ckan/config/who.ini $CKAN_CONFIG/who.ini && \
     cp -v $CKAN_VENV/src/ckan/contrib/docker/ckan-entrypoint.sh /ckan-entrypoint.sh && \
     chmod +x /ckan-entrypoint.sh && \
