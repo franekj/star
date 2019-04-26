@@ -29,6 +29,9 @@ ENV CKAN_HOME /usr/lib/ckan
 ENV CKAN_VENV $CKAN_HOME/venv
 ENV CKAN_CONFIG /etc/ckan
 ENV CKAN_STORAGE_PATH=/var/lib/ckan
+ENV CKAN_SMTP_SERVER=mailhub.env.cz
+ENV CKAN_MAX_UPLOAD_SIZE_MB=100
+
 
 # Build-time variables specified by docker-compose.yml / .env
 ARG CKAN_SITE_URL
@@ -56,6 +59,7 @@ RUN ckan-pip install -U pip && \
     ckan-pip install -r $CKAN_VENV/src/ckanext-dcat/requirements.txt && \
     ckan-pip install -e "git+https://github.com/ckan/ckanext-harvest.git#egg=ckanext-harvest" && \
     ckan-pip install -e "git+https://github.com/okfn/ckanext-disqus#egg=ckanext-disqus && \
+    ckan-pip install -e "git+https://github.com/ckan/ckanext-scheming.git#egg=ckanext-scheming" && \ 
     ckan-pip install ckanext-datarequests && \
     ckan-pip install -r $CKAN_VENV/src/ckanext-harvest/pip-requirements.txt && \
     ckan-pip install -e $CKAN_VENV/src/ckanext-mzp && \
