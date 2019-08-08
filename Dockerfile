@@ -29,9 +29,6 @@ ENV CKAN_HOME /usr/lib/ckan
 ENV CKAN_VENV $CKAN_HOME/venv
 ENV CKAN_CONFIG /etc/ckan
 ENV CKAN_STORAGE_PATH=/var/lib/ckan
-ENV CKAN_SMTP_SERVER=mailhub.env.cz
-ENV CKAN_MAX_UPLOAD_SIZE_MB=100
-
 
 # Build-time variables specified by docker-compose.yml / .env
 ARG CKAN_SITE_URL
@@ -48,26 +45,42 @@ RUN mkdir -p $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH && \
 # Setup CKAN
 ADD . $CKAN_VENV/src/ckan/
 RUN mv $CKAN_VENV/src/ckan/ckanext-mzp $CKAN_VENV/src
-RUN mv $CKAN_VENV/src/ckan/ckanext-hierarchy $CKAN_VENV/src
+RUN mv $CKAN_VENV/src/ckan/ckanext-scheming $CKAN_VENV/src
 RUN ckan-pip install -U pip && \
     ckan-pip install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirement-setuptools.txt && \
     ckan-pip install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirements.txt && \
     ckan-pip install -e $CKAN_VENV/src/ckan/ && \
+############### plugin spatial ############### 
     ckan-pip install -e "git+https://github.com/ckan/ckanext-spatial.git#egg=ckanext-spatial" && \
     ckan-pip install -r $CKAN_VENV/src/ckanext-spatial/pip-requirements.txt && \
+############### plugin MZP ############### 
+    ckan-pip install -e "git+https://github.com/kapucko/ckanext-hierarchy.git#egg=ckanext-hierarchy" && \
+    ckan-pip install -e $CKAN_VENV/src/ckanext-mzp && \
+    ckan-pip install -r $CKAN_VENV/src/ckanext-scheming/requirements.txt && \
+    ckan-pip install -e $CKAN_VENV/src/ckanext-scheming && \
+###############
     ckan-pip install -e "git+https://github.com/ckan/ckanext-dcat.git#egg=ckanext-dcat" && \
     ckan-pip install -r $CKAN_VENV/src/ckanext-dcat/requirements.txt && \
+###############
     ckan-pip install -e "git+https://github.com/ckan/ckanext-harvest.git#egg=ckanext-harvest" && \
-    ckan-pip install -e "git+https://github.com/okfn/ckanext-disqus#egg=ckanext-disqus" && \
-    ckan-pip install -e "git+https://github.com/ckan/ckanext-scheming.git#egg=ckanext-scheming" && \ 
-    ckan-pip install ckanext-datarequests && \
     ckan-pip install -r $CKAN_VENV/src/ckanext-harvest/pip-requirements.txt && \
-    ckan-pip install -e $CKAN_VENV/src/ckanext-mzp && \
-    ckan-pip install -e $CKAN_VENV/src/ckanext-hierarchy && \
+#    ckan-pip install ckanext-envvars && \
+    ckan-pip install ckanext-geoview && \
+    ckan-pip install -e "git+https://github.com/geosolutions-it/ckanext-tableauview#egg=ckanext-tableauview" && \
+    ckan-pip install -e "git+https://github.com/conwetlab/ckanext-datarequests.git#egg=ckanext-datarequests" && \
+    ckan-pip install -e "git+https://github.com/ckan/ckanext-viewhelpers.git#egg=ckanext-viewhelpers" && \
+    ckan-pip install -e "git+https://github.com/ckan/ckanext-dashboard.git#egg=ckanext-dashboard" && \
+    ckan-pip install -e "git+https://github.com/ckan/ckanext-basiccharts.git#egg=ckanext-basiccharts" && \
+    ckan-pip install -e "git+https://github.com/ckan/ckanext-mapviews.git#egg=ckanext-mapviews" && \
+#    ckan-pip install ckanext-datarequests && \
+    ckan-pip install -e "git+https://github.com/okfn/ckanext-disqus#egg=ckanext-disqus" && \
+    ckan-pip install -e "git+https://github.com/ckan/ckanext-apihelper.git#egg=ckanext-apihelper" && \
+    ckan-pip install -e "git+https://github.com/jqnatividad/ckanext-odata#egg=ckanext-odata" && \
     ln -s $CKAN_VENV/src/ckan/ckan/config/who.ini $CKAN_CONFIG/who.ini && \
     cp -v $CKAN_VENV/src/ckan/contrib/docker/ckan-entrypoint.sh /ckan-entrypoint.sh && \
+    cp -v $CKAN_VENV/src/ckan/contrib/docker/ckan_dataset.json $CKAN_VENV/src/ckanext-scheming/ckanext/scheming/ckan_dataset.json && \
     chmod +x /ckan-entrypoint.sh && \
-    chown -R ckan:ckan $CKAN_HOME $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH $CKAN_VENV/src/ckanext-spatial $CKAN_VENV/src/ckanext-hierarchy $CKAN_VENV/src/ckanext-dcat $CKAN_VENV/src/ckanext-harvest
+    chown -R ckan:ckan $CKAN_HOME $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH
 
 ENTRYPOINT ["/ckan-entrypoint.sh"]
 

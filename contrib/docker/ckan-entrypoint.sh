@@ -34,15 +34,35 @@ set_environment () {
   export CKAN_SMTP_PASSWORD=${CKAN_SMTP_PASSWORD}
   export CKAN_SMTP_MAIL_FROM=${CKAN_SMTP_MAIL_FROM}
   export CKAN_MAX_UPLOAD_SIZE_MB=${CKAN_MAX_UPLOAD_SIZE_MB}
+  export CKAN_LOCALE_DEFAULT=${CKAN_LOCALE_DEFAULT}
+  export CKAN_LOCALE_ORDER=${CKAN_LOCALE_ORDER}
+  export CKAN_SITE_INTRO_TEXT=${CKAN_SITE_INTRO_TEXT}
 }
 
 write_config () {
   ckan-paster make-config --no-interactive ckan "$CONFIG"
 }
 
+# Wait for PostgreSQL
+while ! pg_isready -h db -U postgres; do
+  sleep 1;
+done
+
 # If we don't already have a config file, bootstrap
 if [ ! -e "$CONFIG" ]; then
+  echo "!!! writing config file !!!!"
   write_config
+  echo "!!! set env !!!!"
+  set_environment
+  echo "!!! db init !!!!"
+  ckan-paster --plugin=ckan db init -c "${CKAN_CONFIG}/production.ini"
+
+  echo "!!! creating user systemuser !!!!"
+  ckan-paster --plugin=ckan user add systemuser email=jiri@hrad.ec password=Heslo123 apikey="58d94d5c-7766-4f1b-bc7a-b3034ecf5942" -c "${CKAN_CONFIG}/production.ini"  
+  echo "!!! adding rights to systemuser !!!!"
+  ckan-paster --plugin=ckan sysadmin add systemuser -c "${CKAN_CONFIG}/production.ini" 
+#  echo "!!! adding permissiong for datastore !!!!"
+#  ckan-paster --plugin=ckan datastore set-permissions -c /etc/ckan/production.ini | ckan-paster --plugin=ckan -i db psql -U ckan
 fi
 
 # Get or create CKAN_SQLALCHEMY_URL

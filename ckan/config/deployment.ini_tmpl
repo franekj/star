@@ -1,3 +1,4 @@
+#encoding: utf-8
 #
 # CKAN - Pylons configuration
 #
@@ -68,10 +69,12 @@ ckan.auth.create_dataset_if_not_in_organization = false
 ckan.auth.user_create_groups = false
 ckan.auth.user_create_organizations = false
 ckan.auth.user_delete_groups = true
-ckan.auth.user_delete_organizations = true
-ckan.auth.create_user_via_api = false
+ckan.auth.user_delete_organizations = false
+ckan.auth.create_user_via_api = true
 ckan.auth.create_user_via_web = true
 ckan.auth.roles_that_cascade_to_sub_groups = admin
+ckan.auth.public_user_details = false
+ckan.auth.public_activity_stream_detail = false
 
 
 ## Search Settings
@@ -101,11 +104,18 @@ ckan.site_id = default
 #       Add ``datapusher`` to enable DataPusher
 #		Add ``resource_proxy`` to enable resorce proxying and get around the
 #		same origin policy
-ckan.plugins = stats text_view image_view recline_view
+#ckan.plugins = stats text_view image_view recline_view datastore datapusher datarequests disqus spatial_metadata resource_proxy dcat dcat_rdf_harvester dcat_json_harvester dcat_json_interface structured_data hierarchy_display hierarchy_form mzp geo_view geojson_view wmts_view tableau_view 
+#ckan.plugins = stats text_view image_view recline_view datastore datapusher datarequests disqus resource_proxy dcat dcat_rdf_harvester dcat_json_harvester dcat_json_interface structured_data tableau_view apihelper  hierarchy_display hierarchy_form mzp 
+ckan.plugins = stats text_view image_view recline_view datastore datapusher resource_proxy scheming_datasets spatial_metadata spatial_query dcat dcat_rdf_harvester dcat_json_harvester dcat_json_interface structured_data apihelper hierarchy_display hierarchy_form mzp datarequests disqus geo_view odata tableau_view navigablemap choroplethmap viewhelpers dashboard_preview linechart barchart piechart basicgrid
 
 # Define which views should be created by default
 # (plugins must be loaded in ckan.plugins)
-ckan.views.default_views = image_view text_view recline_view
+
+
+# Define which views should be created by default
+# (plugins must be loaded in ckan.plugins)
+ckan.views.default_views = image_view text_view recline_view geo_view tableau_view navigablemap 
+#ckan.views.default_views = image_view text_view recline_view geo_view navigablemap tableau_view
 
 # Customize which text formats the text_view plugin will show
 #ckan.preview.json_formats = json
@@ -117,11 +127,17 @@ ckan.views.default_views = image_view text_view recline_view
 
 ## Front-End Settings
 
-# Uncomment following configuration to enable using of Bootstrap 2
-#ckan.base_public_folder = public-bs2
-#ckan.base_templates_folder = templates-bs2
+ckan.site_title= Ridici System MZP
+ckan.about= 
+    FI-Lab Open Data portal is the datahub for Smart Cities connected to FI-Lab, where developers and entrepreneurs can experiment with data and FIWARE Generic Enablers.
 
-ckan.site_title = CKAN
+
+    FIWARE: http://fiware.org/
+
+
+    FI-Lab: http://lab.fiware.org/
+
+
 ckan.site_logo = /base/images/ckan-logo.png
 ckan.site_description =
 ckan.favicon = /base/images/ckan.ico
@@ -140,9 +156,14 @@ ckan.display_timezone = server
 
 
 ## Internationalisation Settings
-ckan.locale_default = en
-ckan.locale_order = en pt_BR ja it cs_CZ ca es fr el sv sr sr@latin no sk fi ru de pl nl bg ko_KR hu sa sl lv
-ckan.locales_offered =
+#ckan.locale_default = en
+#ckan.locale_order = en pt_BR ja it cs_CZ ca es fr el sv sr sr@latin no sk fi ru de pl nl bg ko_KR hu sa sl lv
+#ckan.locales_offered =
+#ckan.locales_filtered_out = en_GB
+
+ckan.locale_default = cs_CZ
+ckan.locale_order = cs_CZ en 
+ckan.locales_offered = cs_CZ en 
 ckan.locales_filtered_out = en_GB
 
 ## Feeds Settings
@@ -154,9 +175,11 @@ ckan.feeds.author_link =
 
 ## Storage Settings
 
-#ckan.storage_path = /var/lib/ckan
-#ckan.max_resource_size = 10
-#ckan.max_image_size = 2
+ckan.storage_path = /var/lib/ckan/storage
+ckan.max_resource_size = 100
+ckan.max_image_size = 20
+
+#ckan.tracking_enabled = true
 
 ## Datapusher settings
 
@@ -167,8 +190,8 @@ ckan.feeds.author_link =
 #ckan.datapusher.assume_task_stale_after = 3600
 
 # Resource Proxy settings
-# Preview size limit, default: 1MB
-#ckan.resource_proxy.max_file_size = 1048576
+# Preview size limit, default: 10MB
+ckan.resource_proxy.max_file_size = 10485760
 # Size of chunks to read/write.
 #ckan.resource_proxy.chunk_size = 4096
 
@@ -180,6 +203,24 @@ ckan.feeds.author_link =
 #ckan.email_notifications_since = 2 days
 ckan.hide_activity_from_users = %(ckan.site_id)s
 
+ckanext.spatial.search_backend = solr
+
+#scheming
+scheming.presets = ckanext.scheming:presets.json
+scheming.dataset_fallback = false
+scheming.dataset_schemas = ckanext.scheming:ckan_dataset.json
+#                           ckanext.spatialx:spatialx_schema.json
+#                           ckanext.spatialx:spatialxy_schema.json
+
+ckan.datarequests.comments = true
+ckan.datarequests.show_datarequests_badge = true
+
+# disqus
+disqus.secret_key  = neRyfzRvowchXND2jk4R7s5RI0oOfJditJg4iVkhIPAnF9JA1pM6sjdXWugd3Iun
+#disqus.public_key  = 6zCUo9O2zJpRxUXfDy7UdSd4qy0Q3lgHprsIQyc9lJOB6qUe4Xqv5ZtZPj4RWwcK
+disqus.public_key  = 6304de17f01e446caa79d4f19333927d
+disqus.name = t-star-env-cz
+
 
 ## Email settings
 
@@ -187,10 +228,12 @@ ckan.hide_activity_from_users = %(ckan.site_id)s
 #error_email_from = ckan-errors@example.com
 #smtp.server = localhost
 #smtp.starttls = False
-#smtp.user = username@example.com
+#smtp.user = info@star.cz
 #smtp.password = your_password
 #smtp.mail_from =
 
+## Background Job Settings
+ckan.jobs.timeout = 180
 
 ## Logging configuration
 [loggers]

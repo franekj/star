@@ -1,0 +1,35 @@
+##Řídicí systém datových zdrojů a informačních výstupů resortu životního prostředí
+Tento Řídící systém je určen MŽP, resortním organizacím a poskytovatelům dat mimo resort pro potřeby tvorby informačních výstupů resortu životního prostředí. Systém se zaměřuje na správce datových zdrojů, pracovníky v oblasti analýz a na tvůrce a přispěvatele informačních výstupů MŽP. Cílem systému je zajistit vytvoření, aktualizace a udržitelnost tvorby resortního katalogu informačních zdrojů za pomoci nejmenší možné skupiny pravidel.
+
+Účelem metodiky katalogizace datových a informačních zdrojů a výstupů resortu je:
+
+###1.   Katalogizace informačních objektů resortu
+Přestože MŽP na pořizování a zpracování dat poskytuje zhruba dvacet procent svého rozpočtu, chybí přehledný katalog zdrojů, jejich užití, zpětná dosledovatelnost a konzistence.
+
+###2.   Řiditelnost tvorby datových zdrojů
+Existence katalogu umožní MŽP správně alokovat finanční a lidské zdroje podle reálné důležitosti.
+
+###3.   Zajištění transparentnosti a efektivity tvorby výstupů resortu
+Jednotlivé informační výstupy mají jasně definované důvody vzniku, využité zdroje i metodu výpočtu. Pokud se informační zdroj změnil, je k dispozici jeho celá historie.
+
+###4.   Zajištění konzistence při tvorbě informačních výstupů různými útvary MŽP a resortními organizacemi
+Při tvorbě především koncepčních materiálů resortu je nutné zajistit plnou konzistentnost použitých zdrojů a řádně tyto zdroje citovat včetně odkazů na verze
+
+###5.   Informování veřejnosti
+Ačkoliv informování veřejnosti je pokryto zákonem 123/1998Sb., centrální přístup k datům resortu dosud nebyl vyjma prostorových dat vybudován.
+
+###6.   Sběr zpětné vazby k publikovaným informačním zdrojům a výstupům
+Zpětná vazba je nejlevnější a nejefektivnější způsob verifikace kvality, reprezentativnosti a konzistence datových a informačních zdrojů resortu
+
+###7.   Publikace ucelené resortní statistiky a archivu datových agregátů
+Resort životního prostředí je jedním z největších poskytovatelů dat ve státě a potřebuje věrohodný, nenáročný a udržitelný mechanismus.
+
+###8.   Sdílení dat místo poskytování
+Společné pracovní prostory nad archivovanými výstupy napříč resortem i mimoresortními zdroji pro budování kultury sdílení a spolupráce.
+
+###9.   Poskytování dat i pro rozhodovací procesy
+Tento katalog může sloužit i jako rozcestník pro přístup k datům pro rozhodovací procesy. Katalog je budován jako hierarchický strom kde vždy je zajištěna informace o vlastníku katalogizovaného objektu.
+
+###10.  Technologická nezávislost
+Katalog musí poskytovat přístup k datům bez ohledu na produkt použitý pro zpracování dat. Od prostého stažení dat pro další využití až po online přístup k datům.
+
