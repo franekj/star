@@ -1,105 +1,36 @@
-# STAR
+# STAR - Řídící systém
 
-Řídící systém
+Repozitory obsahuje kompletní balík Řídícího systému STAR, který se skládá z dockerových kontejnerů. 
 
+Vlastní katalog CKAN a jeho pluginy se postaví pomocí **Dockerfile**. 
+Ostatni obrazy kontejneru jsou použity hotové. 
 
-						nejdriv .env!
-cd project/ckan/contrib/docker/
+## Systémové nároky
 
-CKAN_SITE_ID=mzp_ckan
+Pokud je **Řídící systém STAR** instalován kompletní, tedy včetně komponent Elasticsearch a Kibana, a předpokládá se jeho produkční nasazení,vyžaduje virtuální stroj v této konfiguraci:
 
-CKAN_SITE_URL=https://t-star.env.cz
+- Platforma: **debian:stable** nebo **ubuntu:bionic**. 
+- vCPU:  4-8
+- vRAM:  nejméně 64GB
+- vHDD:  1TB
+- Kontejnerová platforma: **Docker** v19 nebo vyšší, **docker-compose**  v1.24 nebo vyšší
+- Správa zdrojů:  git
+- V kernelu nastavit **vm.max_map_count=262144** !!!
 
-CKAN_PORT=5000
+Na vitruální stroj s těmito parametry a touto předinstalací lze pak jednoduchým způsobem nasadit **STAR Řídící systém**:
 
-CKAN_MAX_UPLOAD_SIZE_MB=100
+## Nasazení
 
-CKAN_SMTP_SERVER=mailhub.env.cz:25
+      cd project/ckan/contrib/docker/
 
-CKAN_SMTP_STARTTLS=False
+Zde se nastaví systémové proměnné v souboru **.env** (lze použít předpřipravený .env.template) a pak se spustí setavení systému: 
 
-CKAN_SMTP_USER=
+      docker-compose build
+      docker-compose up -d
+ 
 
-CKAN_SMTP_PASSWORD=
+ ## Úkony po nasazení
 
-CKAN_SMTP_MAIL_FROM=root@env.cz
-
-POSTGRES_PASSWORD=ckan
-
-POSTGRES_PORT=5432
-
-DATASTORE_READONLY_PASSWORD=datastore
-
-
-
-docker-compose up -d redis db solr
-
-docker-compose up -d ckan
-
-docker exec ckan /usr/local/bin/ckan-paster --plugin=ckan datastore set-permissions -c /etc/ckan/production.ini | docker exec -i db psql -U ckan
-
-
-docker-compose up -d datapusher harvester-fetch harvester-gather
-
-docker-compose ps
-
-docker-compose exec ckan bash
-
-. /usr/lib/ckan/venv/bin/activate
-
-cd /usr/lib/ckan/venv/src/ckan
-
-paster sysadmin add datafiller -c /etc/ckan/production.ini
-
-docker-compose up -d datapusher
-
-
-
-#ladit:
-
-docker-compose stop ckan
-
-docker-compose rm -f ckan
-
-docker-compose up -d ckan
-
-
-
-ckanext-contact_us
-
-ckanext-mapviews
-
-
-
-#volání přes docker:
-
-docker-compose exec ckan /usr/lib/ckan/venv/bin/paster --plugin=ckan user list -c /etc/ckan/production.ini
-
-docker-compose exec ckan /usr/lib/ckan/venv/bin/paster --plugin=ckan plugin-info -c /etc/ckan/production.ini >plugins.txt
-
-   -> a tady to právě vyklopí hlášku že tam je nějaká chyba v pluginech
-
-
-      do production.ini přidat:
-
-disqus.secret_key  = neRyfzRvowchXND2jk4R7s5RI0oOfJditJg4iVkhIPAnF9JA1pM6sjdXWugd3Iun
-
-disqus.public_key  = 6304de17f01e446caa79d4f19333927d
-
-disqus.name = t-star-env-cz
-
-
-ckan.datarequests.comments = true
-
-ckan.datarequests.show_datarequests_badge = true
-
-
-## Internationalisation Settings
-
-ckan.locale_default = cs_CZ
-
-ckan.locale_order = cs_CZ en
-
-ckan.locales_offered =
-
-ckan.locales_filtered_out = en_GB
+1. Nasazenou instanci systému zpřístupníme pomocí reverzní proxy tak, aby to odpovídalo naší bezpečnostní politice. 
+2. Po nasazení zkontrolujeme, zda všechny kontejnery běží. Pokud ano, můžeme začít instanci systému používat
+3. Pokud ne, použijeme vložený **Portainer** k prozkoumání logů a přípoadně upravíme konfiguraci jednotlivých kontejnerů. 

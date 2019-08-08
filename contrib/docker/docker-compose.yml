@@ -4,14 +4,35 @@ version: "3"
 
 volumes:
   ckan_config:
+    driver: local
   ckan_home:
+    driver: local
   ckan_storage:
+    driver: local
   pg_data:
+    driver: local
   solr_data:
+    driver: local
+  portainer_data:
+    driver: local    
+  cache_data:
+    driver: local    
+  esdata01:
+    driver: local
+  esdata02:
+    driver: local
 
+networks:
+  backend:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.77.0.0/16
+    
 services:
   ckan: &ckan
     container_name: ckan
+    hostname: ckan
     build:
       context: ../../
       args:
@@ -40,20 +61,35 @@ services:
       - CKAN_MAX_UPLOAD_SIZE_MB=${CKAN_MAX_UPLOAD_SIZE_MB}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - DS_RO_PASS=${DATASTORE_READONLY_PASSWORD}
-
     volumes:
       - ckan_config:/etc/ckan
       - ckan_home:/usr/lib/ckan
       - ckan_storage:/var/lib/ckan
+    networks:
+      backend:
+        ipv4_address: 10.77.0.21
+        aliases:
+          - ckan
+          - catalog
+    restart: unless-stopped
 
   datapusher:
     container_name: datapusher
+    hostname: datapusher
     image: clementmouchet/datapusher
     ports:
       - "8800:8800"
+    networks:
+      backend:
+        ipv4_address: 10.77.0.22
+        aliases:
+          - datapusher
+          - push
+    restart: unless-stopped
 
   db:
     container_name: db
+    hostname: db
     build:
       context: ../../
       dockerfile: contrib/docker/postgresql/Dockerfile
@@ -65,24 +101,61 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - pg_data:/var/lib/postgresql/data
+    networks:
+      backend:
+        ipv4_address: 10.77.0.23
+        aliases:
+          - db
+          - database
+          - postgres
+          - postgresql
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
 
   solr:
     container_name: solr
+    hostname: solr
     build:
       context: ../../
       dockerfile: contrib/docker/solr/Dockerfile
     volumes:
       - solr_data:/opt/solr/server/solr/ckan/data
+    networks:
+      backend:
+        ipv4_address: 10.77.0.24
+        aliases:
+          - solr
+    restart: unless-stopped
 
   redis:
     container_name: redis
+    hostname: redis    
     image: redis:latest
+    expose: 
+      - 6379
+    ports:
+      - 6379:6379
+    volumes:
+      - cache_data:/data
+    networks:
+      backend:
+        ipv4_address: 10.66.0.25
+        aliases: 
+          - redis
+          - cache
+    command: ["redis-server", "--appendonly", "yes"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli","ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   harvester-fetch:
     <<: *ckan
     container_name: harvester-fetch
+    hostname: harvester-fetch
     command:
       - ckan-paster
       - --plugin=ckanext-harvest
@@ -90,10 +163,17 @@ services:
       - fetch_consumer
       - --config=/etc/ckan/production.ini
     ports: []
-
+    networks:
+      backend:
+        ipv4_address: 10.66.0.26
+        aliases: 
+          - harvester-fetch
+          - fetch
+  
   harvester-gather:
     <<: *ckan
     container_name: harvester-gather
+    hostname: harvester-gather
     command:
       - ckan-paster
       - --plugin=ckanext-harvest
@@ -101,3 +181,119 @@ services:
       - gather_consumer
       - --config=/etc/ckan/production.ini
     ports: []
+    networks:
+      backend:
+        ipv4_address: 10.66.0.27
+        aliases: 
+          - harvester-gather
+          - gather
+
+  es01:
+    image: "docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}"
+    container_name: es01
+    hostname: es01
+    environment:
+      - node.name=es01
+      - "cluster.name=${ES_CLUSTER}"
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms${ES_JVM_HEAP} -Xmx${ES_JVM_HEAP}"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - node.master=true
+      - node.data=false
+      - discovery.zen.ping.unicast.hosts=[127.0.1,10.77.0.10,10.77.0.11]
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata01:/usr/share/elasticsearch/data
+      - ${PWD}/logs/es01:/usr/share/elasticsearch/logs
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      backend:
+        ipv4_address: 10.77.0.10
+        aliases:
+          - es01
+          - elastic01
+          - elasticsearch
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl","-s" ,"-f", "http://localhost:9200/_cat/health"]
+
+  es02:
+    image: "docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}"
+    container_name: es02
+    hostname: es02
+    environment:
+      - node.name=es02
+      - "cluster.name=${ES_CLUSTER}"
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms${ES_JVM_HEAP} -Xmx${ES_JVM_HEAP}"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - node.master=false
+      - node.data=true
+      - discovery.zen.ping.unicast.hosts=[127.0.0.1,10.77.0.10,10.77.0.11]
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata02:/usr/share/elasticsearch/data
+      - ${PWD}/logs/es02:/usr/share/elasticsearch/logs
+    networks:
+      backend:
+        ipv4_address: 10.77.0.11
+        aliases: 
+          - es02
+          - elastic02
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl","-s" ,"-f", "http://localhost:9200/_cat/health"]
+  
+  # Vizualizace dat
+  kibana:
+    image: "docker.elastic.co/kibana/kibana:${ELASTIC_VERSION}"
+    container_name: kibana
+    hostname: kibana
+    environment:
+      SERVER_NAME: kibana-star.env.cz
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    networks:
+      backend:
+        ipv4_address: 10.77.0.12
+        aliases: 
+          - kibana
+          - bi
+    ports:
+      - 5601:5601
+    volumes:
+      - ${PWD}/conf/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+    restart: unless-stopped
+    depends_on:
+      - es01
+      - es02
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-f", "http://localhost:5601/"]
+      retries: 6
+  
+  portainer:
+    image: portainer/portainer:latest
+    container_name: portainer
+    hostname: portainer
+    ports:
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    restart: unless-stopped
+    command: -H unix:///var/run/docker.sock
+    networks:
+      backend:
+        ipv4_address: 10.77.0.40
+        aliases: 
+          - portainer
+          - portainet-app
