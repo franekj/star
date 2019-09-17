@@ -24,7 +24,7 @@ show_remove    - If True, show the remove button to remove showcase/dataset asso
       <h3 class="media-heading">{{ h.link_to(h.truncate(title, truncate_title),  url)}}</h3>
     {% endblock %}
     {% if show_remove %}
-      <form method="post"><input type="hidden" value="{{ source.source_id }}" name="remove_source_id" /><input value="{{ _('Remove') }}" type="submit" class="btn btn-danger btn-small media-edit" title="{{ _('Remove source from this dataset') }}"/></form>
+      <form method="post"><input type="hidden" value="{{ source.source_id }}" name="remove_source_id" /><input value="{{ _('Odebrat') }}" type="submit" class="btn btn-danger btn-small media-edit" title="{{ _('Odebrat zdroj tohoto datasetu') }}"/></form>
     {% endif %}
   {% endblock %}
 </li>

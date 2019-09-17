@@ -46,6 +46,8 @@ RUN mkdir -p $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH && \
 ADD . $CKAN_VENV/src/ckan/
 RUN mv $CKAN_VENV/src/ckan/ckanext-mzp $CKAN_VENV/src
 RUN mv $CKAN_VENV/src/ckan/ckanext-scheming $CKAN_VENV/src
+RUN mv $CKAN_VENV/src/ckan/ckanext-hierarchy $CKAN_VENV/src
+RUN mv $CKAN_VENV/src/ckan/ckanext-validation $CKAN_VENV/src
 RUN ckan-pip install -U pip && \
     ckan-pip install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirement-setuptools.txt && \
     ckan-pip install --upgrade --no-cache-dir -r $CKAN_VENV/src/ckan/requirements.txt && \
@@ -54,10 +56,13 @@ RUN ckan-pip install -U pip && \
     ckan-pip install -e "git+https://github.com/ckan/ckanext-spatial.git#egg=ckanext-spatial" && \
     ckan-pip install -r $CKAN_VENV/src/ckanext-spatial/pip-requirements.txt && \
 ############### plugin MZP ############### 
-    ckan-pip install -e "git+https://github.com/kapucko/ckanext-hierarchy.git#egg=ckanext-hierarchy" && \
+    ckan-pip install -e $CKAN_VENV/src/ckanext-hierarchy && \
     ckan-pip install -e $CKAN_VENV/src/ckanext-mzp && \
     ckan-pip install -r $CKAN_VENV/src/ckanext-scheming/requirements.txt && \
     ckan-pip install -e $CKAN_VENV/src/ckanext-scheming && \
+#    ckan-pip install -e "git+https://github.com/frictionlessdata/ckanext-validation.git#egg=ckanext-validation" && \
+    ckan-pip install -r $CKAN_VENV/src/ckanext-validation/requirements.txt && \
+    ckan-pip install -e $CKAN_VENV/src/ckanext-validation && \
 ###############
     ckan-pip install -e "git+https://github.com/ckan/ckanext-dcat.git#egg=ckanext-dcat" && \
     ckan-pip install -r $CKAN_VENV/src/ckanext-dcat/requirements.txt && \
@@ -66,16 +71,20 @@ RUN ckan-pip install -U pip && \
     ckan-pip install -r $CKAN_VENV/src/ckanext-harvest/pip-requirements.txt && \
 #    ckan-pip install ckanext-envvars && \
     ckan-pip install ckanext-geoview && \
+    ckan-pip install -e git+https://github.com/telefonicaid/ckanext-ngsiview#egg=ckanext-ngsiview && \
+    ckan-pip install -e git+https://github.com/ckan/ckanext-pdfview.git#egg=ckanext-pdfview && \
     ckan-pip install -e "git+https://github.com/geosolutions-it/ckanext-tableauview#egg=ckanext-tableauview" && \
     ckan-pip install -e "git+https://github.com/conwetlab/ckanext-datarequests.git#egg=ckanext-datarequests" && \
     ckan-pip install -e "git+https://github.com/ckan/ckanext-viewhelpers.git#egg=ckanext-viewhelpers" && \
     ckan-pip install -e "git+https://github.com/ckan/ckanext-dashboard.git#egg=ckanext-dashboard" && \
     ckan-pip install -e "git+https://github.com/ckan/ckanext-basiccharts.git#egg=ckanext-basiccharts" && \
     ckan-pip install -e "git+https://github.com/ckan/ckanext-mapviews.git#egg=ckanext-mapviews" && \
-#    ckan-pip install ckanext-datarequests && \
+    ckan-pip install ckanext-datarequests && \
     ckan-pip install -e "git+https://github.com/okfn/ckanext-disqus#egg=ckanext-disqus" && \
     ckan-pip install -e "git+https://github.com/ckan/ckanext-apihelper.git#egg=ckanext-apihelper" && \
     ckan-pip install -e "git+https://github.com/jqnatividad/ckanext-odata#egg=ckanext-odata" && \
+    ckan-pip install -e git+https://github.com/conwetlab/ckanext-privatedatasets.git#egg=ckanext-privatedatasets && \
+    ckan-pip install -e git+https://github.com/conwetlab/ckanext-storepublisher.git#egg=ckanext-storepublisher && \
     ln -s $CKAN_VENV/src/ckan/ckan/config/who.ini $CKAN_CONFIG/who.ini && \
     cp -v $CKAN_VENV/src/ckan/contrib/docker/ckan-entrypoint.sh /ckan-entrypoint.sh && \
     cp -v $CKAN_VENV/src/ckan/contrib/docker/ckan_dataset.json $CKAN_VENV/src/ckanext-scheming/ckanext/scheming/ckan_dataset.json && \

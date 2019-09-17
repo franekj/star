@@ -22,31 +22,6 @@
       "form_snippet": "markdown.html",
       "form_placeholder": "eg. Some useful notes about the data"
     },
-        {
-      "field_name": "datum_platnosti",
-      "label": "Datum platnosti datasetu",
-      "form_snippet": "date.html",
-      "validators": "ignore_missing isodate",
-      "form_placeholder": "datum"
-    },
-    {
-      "field_name": "authority",
-      "label": "Autoritativnost datové sady",
-      "help_text": "Je tato datová sada autoritativní?",
-      "help_inline": true,
-      "preset": "select",
-      "choices": [
-        {
-          "value": "ano",
-          "label": "Ano, je autoritativní"
-        },
-        {
-          "value": "ne",
-          "label": "Není autoritativní, jedná se o pomocný dataset"
-        }
-      ]
-    },
-
     {
       "field_name": "tag_string",
       "label": "Tags",
@@ -122,6 +97,30 @@
       "label": "Description",
       "form_snippet": "markdown.html",
       "form_placeholder": "Some useful notes about the data"
+    },
+    {
+      "field_name": "datum_platnosti",
+      "label": "Datum platnosti datasetu",
+      "form_snippet": "date.html",
+      "validators": "ignore_missing isodate",
+      "form_placeholder": "datum"
+    },
+    {
+      "field_name": "authority",
+      "label": "Autoritativnost datové sady",
+      "help_text": "Je tato datová sada autoritativní?",
+      "help_inline": true,
+      "preset": "select",
+      "choices": [
+        {
+          "value": "ano",
+          "label": "Ano, je autoritativní"
+        },
+        {
+          "value": "ne",
+          "label": "Není autoritativní, jedná se o pomocná data"
+        }
+      ]
     },
     {
       "field_name": "format",

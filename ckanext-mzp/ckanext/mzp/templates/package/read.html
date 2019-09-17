@@ -12,12 +12,12 @@
   {{ super() }}
   {% set sources = h.get_package_sources(c.pkg_dict.id) %}
   {% if sources %}
-      <h3>{{ _('Sources') }}</h3>
+      <h3>{{ _('Zdrojová data tohoto datasetu:') }}</h3>
       {% snippet "mzp/snippets/source_list.html", sources=sources, pkg_id=c.pkg_dict.name, show_remove=False %}
   {% endif %}
   {% set references = h.get_package_reference(c.pkg_dict.id) %}
   {% if references %}
-      <h3>{{ _('Referenced by') }}</h3>
+      <h3>{{ _('Využito v:') }}</h3>
       {% snippet "mzp/snippets/source_list.html", sources=references, pkg_id=c.pkg_dict.name, show_remove=False %}
   {% endif %}
 {% endblock %}

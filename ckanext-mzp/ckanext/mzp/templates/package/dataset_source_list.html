@@ -5,11 +5,11 @@
 {% block primary_content_inner %}
   {% if h.check_access('package_update') %}
     <form method="post" class="form-horizontal" id="source-add">
-      <input id="field-source" type="text" name="source_added" placeholder="Start typing dataset name or insert external link"
+      <input id="field-source" type="text" name="source_added" placeholder="Začněte vpisovat název datového zdroje"
             value="" class="control-medium" data-module="autocomplete"
             data-module-source="/api/2/util/dataset/autocomplete?incomplete=?">
-      <input type="text" id="source-title" name="title_added" title="External link title" class="select2-container control-medium" style="width:786px; display:none" value="" placeholder="Type title of the external link">
-      <button type="submit" class="btn btn-primary" title="{{ _('Associate this source with this dataset') }}">{{ _('Add as dataset source') }}</button>
+      <input type="text" id="source-title" name="title_added" title="External link title" class="select2-container control-medium" style="width:786px; display:none" value="" placeholder="Napište název zdroje">
+      <button type="submit" class="btn btn-primary" title="{{ _('Vytvořte vztah s tímto datasetem') }}">{{ _('Vložte jako zdroj využitý pro tvorbu tohoto datasetu') }}</button>
     </form>
   {% endif %}
 

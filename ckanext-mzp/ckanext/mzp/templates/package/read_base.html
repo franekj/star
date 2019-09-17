@@ -3,6 +3,6 @@
 {% block content_primary_nav %}
   {{ super() }}
     {% if h.check_access('package_update', {'id':pkg.id }) %}
-         {{ h.build_nav_icon('dataset_source_list', _('Sources'), id=pkg.id) }}
+         {{ h.build_nav_icon('dataset_source_list', _('Datové hierarchie'), id=pkg.id) }}
     {% endif %}
 {% endblock %}
