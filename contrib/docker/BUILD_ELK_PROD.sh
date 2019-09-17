@@ -29,6 +29,6 @@ nohup docker exec -it ckan /usr/local/bin/ckan-paster --plugin=ckanext-harvest h
 nohup docker exec -it ckan /usr/local/bin/ckan-paster --plugin=ckanext-harvest harvester fetch_consumer -c /etc/ckan/production.ini &
 
 docker exec -it ckan /usr/local/bin/ckan-paster --plugin=ckanext-harvest harvester run -c /etc/ckan/production.ini
-docker-compose --file docker-compose.yml down 
-docker-compose --file docker-compose.yml up --detach ckan
-docker-compose --file docker-compose.yml logs --follow ckan
+docker-compose --file docker-compose.elk_prod.yml down 
+docker-compose --file docker-compose.elk_prod.yml up --detach ckan
+docker-compose --file docker-compose.elk_prod.yml logs --follow ckan

@@ -17,11 +17,9 @@ volumes:
     driver: local    
   cache_data:
     driver: local    
-  esdata01:
+  esdata:
     driver: local
-  esdata02:
-    driver: local
-
+  
 networks:
   backend:
     driver: bridge
@@ -109,7 +107,6 @@ services:
           - database
           - postgres
           - postgresql
-    restart: unless-stopped
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
 
@@ -126,7 +123,6 @@ services:
         ipv4_address: 10.77.0.24
         aliases:
           - solr
-    restart: unless-stopped
 
   redis:
     container_name: redis
@@ -152,63 +148,25 @@ services:
       timeout: 10s
       retries: 5
 
-  harvester-fetch:
-    <<: *ckan
-    container_name: harvester-fetch
-    hostname: harvester-fetch
-    command:
-      - ckan-paster
-      - --plugin=ckanext-harvest
-      - harvester                
-      - fetch_consumer
-      - --config=/etc/ckan/production.ini
-    ports: []
-    networks:
-      backend:
-        ipv4_address: 10.77.0.26
-        aliases: 
-          - harvester-fetch
-          - fetch
-  
-  harvester-gather:
-    <<: *ckan
-    container_name: harvester-gather
-    hostname: harvester-gather
-    command:
-      - ckan-paster
-      - --plugin=ckanext-harvest
-      - harvester
-      - gather_consumer
-      - --config=/etc/ckan/production.ini
-    ports: []
-    networks:
-      backend:
-        ipv4_address: 10.77.0.27
-        aliases: 
-          - harvester-gather
-          - gather
-
-  es01:
+  elasticsearch:
     image: "docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}"
-    container_name: es01
-    hostname: es01
+    container_name: elasticsearch
+    hostname: elasticsearch
     environment:
-      - node.name=es01
+      - node.name=elasticsearch
       - "cluster.name=${ES_CLUSTER}"
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms${ES_JVM_HEAP} -Xmx${ES_JVM_HEAP}"
       - http.cors.enabled=true
       - http.cors.allow-origin=*
-      - node.master=true
-      - node.data=false
-      - discovery.zen.ping.unicast.hosts=[127.0.1,10.77.0.10,10.77.0.11]
+      - discovery.type=single-node
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
-      - esdata01:/usr/share/elasticsearch/data
-      - ${PWD}/logs/es01:/usr/share/elasticsearch/logs
+      - esdata:/usr/share/elasticsearch/data
+      - ${PWD}/logs/elasticsearch:/usr/share/elasticsearch/logs
     ports:
       - 9200:9200
       - 9300:9300
@@ -216,40 +174,9 @@ services:
       backend:
         ipv4_address: 10.77.0.10
         aliases:
-          - es01
-          - elastic01
+          - es
+          - elastic
           - elasticsearch
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl","-s" ,"-f", "http://localhost:9200/_cat/health"]
-
-  es02:
-    image: "docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}"
-    container_name: es02
-    hostname: es02
-    environment:
-      - node.name=es02
-      - "cluster.name=${ES_CLUSTER}"
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms${ES_JVM_HEAP} -Xmx${ES_JVM_HEAP}"
-      - http.cors.enabled=true
-      - http.cors.allow-origin=*
-      - node.master=false
-      - node.data=true
-      - discovery.zen.ping.unicast.hosts=[127.0.0.1,10.77.0.10,10.77.0.11]
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - esdata02:/usr/share/elasticsearch/data
-      - ${PWD}/logs/es02:/usr/share/elasticsearch/logs
-    networks:
-      backend:
-        ipv4_address: 10.77.0.11
-        aliases: 
-          - es02
-          - elastic02
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl","-s" ,"-f", "http://localhost:9200/_cat/health"]
@@ -260,7 +187,7 @@ services:
     container_name: kibana
     hostname: kibana
     environment:
-      SERVER_NAME: kibana-star.env.cz
+      SERVER_NAME: star.env.cz
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
     networks:
       backend:
@@ -274,8 +201,7 @@ services:
       - ${PWD}/conf/kibana/:/usr/share/kibana/config/:ro
     restart: unless-stopped
     depends_on:
-      - es01
-      - es02
+      - elasticsearch
     healthcheck:
       test: ["CMD", "curl", "-s", "-f", "http://localhost:5601/"]
       retries: 6
@@ -284,6 +210,7 @@ services:
     image: portainer/portainer:latest
     container_name: portainer
     hostname: portainer
+    user: root
     ports:
       - 9000:9000
     volumes:
@@ -296,4 +223,4 @@ services:
         ipv4_address: 10.77.0.40
         aliases: 
           - portainer
-          - portainet-app
+          - portainer-app
