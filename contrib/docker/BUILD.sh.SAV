@@ -17,17 +17,18 @@ docker exec -it ckan /usr/local/bin/ckan-paster --plugin=ckanext-spatial spatial
 
 echo "#### SYSADM INIT ####"
 docker exec -it ckan /usr/local/bin/ckan-paster --plugin=ckan user add systemuser email=ckan@mzp.cz password=Heslo123 apikey="50bfeb5d-ac92-4b76-ad1a-393b3c65ad0c" -c /etc/ckan/production.ini
-docker exec -it ckan /usr/local/bin/ckan-paster --plugin=ckan sysadmin add systemuser -c /etc/ckan/production.ini
-
+docker exec -it ckan /usr/local/bin/ckan-paster --plugin=ckan sysadmin add systemuser -c /etc/ckan/production.in
 
 echo "#### HARVESTING INIT ####"
 docker exec -it ckan /usr/local/bin/ckan-paster --plugin=ckan user add harvest email=ckan@mzp.cz password=Heslo123 -c /etc/ckan/production.ini
 docker exec -it ckan /usr/local/bin/ckan-paster --plugin=ckan sysadmin add harvest -c /etc/ckan/production.ini
 docker exec -it ckan /usr/local/bin/ckan-paster --plugin=ckanext-harvest harvester initdb -c /etc/ckan/production.ini
+
 echo "#### HARVESTING HANDLERS ####"
 nohup docker exec -it ckan /usr/local/bin/ckan-paster --plugin=ckanext-harvest harvester gather_consumer -c /etc/ckan/production.ini &
 nohup docker exec -it ckan /usr/local/bin/ckan-paster --plugin=ckanext-harvest harvester fetch_consumer -c /etc/ckan/production.ini &
+
 docker exec -it ckan /usr/local/bin/ckan-paster --plugin=ckanext-harvest harvester run -c /etc/ckan/production.ini
-docker-compose down 
-docker-compose up -d ckan
-docker-compose logs -f ckan
+docker-compose --file docker-compose.yml down 
+docker-compose --file docker-compose.yml up --detach ckan
+docker-compose --file docker-compose.yml logs --follow ckan
