@@ -1,0 +1,145 @@
+# docker-compose build && docker-compose up -d
+# If "docker-compose logs ckan" shows DB not ready, run "docker-compose restart ckan" a few times.
+version: "3"
+
+volumes:
+  ckan_config:
+    driver: local
+  ckan_home:
+    driver: local
+  ckan_storage:
+    driver: local
+  pg_data:
+    driver: local
+  solr_data:
+    driver: local
+  cache_data:
+    driver: local
+
+networks:
+  backend:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.77.0.0/16
+
+services:
+  ckan: &ckan
+    container_name: ckan
+    hostname: ckan
+    build:
+      context: ../../
+      args:
+          - CKAN_SITE_URL=${CKAN_SITE_URL}
+    links:
+      - db
+      - solr
+      - redis
+      - datapusher
+    depends_on:
+      - redis
+      - solr
+      - db
+      - datapusher
+    ports:
+      - "0.0.0.0:${CKAN_PORT}:5000"
+    environment:
+      # Defaults work with linked containers, change to use own Postgres, SolR, Redis or Datapusher
+      - CKAN_SQLALCHEMY_URL=postgresql://ckan:${POSTGRES_PASSWORD}@db/ckan
+      - CKAN_DATASTORE_WRITE_URL=postgresql://ckan:${POSTGRES_PASSWORD}@db/datastore
+      - CKAN_DATASTORE_READ_URL=postgresql://datastore_ro:${DATASTORE_READONLY_PASSWORD}@db/datastore
+      - CKAN_SOLR_URL=http://solr:8983/solr/ckan
+      - CKAN_REDIS_URL=redis://redis:6379/1
+      - CKAN_DATAPUSHER_URL=http://datapusher:8800
+      - CKAN_SITE_URL=${CKAN_SITE_URL}
+      - CKAN_MAX_UPLOAD_SIZE_MB=${CKAN_MAX_UPLOAD_SIZE_MB}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DS_RO_PASS=${DATASTORE_READONLY_PASSWORD}
+    volumes:
+      - ckan_config:/etc/ckan
+      - ckan_home:/usr/lib/ckan
+      - ckan_storage:/var/lib/ckan
+    networks:
+      backend:
+        ipv4_address: 10.77.0.21
+        aliases:
+          - ckan
+          - catalog
+    restart: unless-stopped
+
+  datapusher:
+    container_name: datapusher
+    hostname: datapusher
+    image: clementmouchet/datapusher
+    ports:
+      - "8800:8800"
+    networks:
+      backend:
+        ipv4_address: 10.77.0.22
+        aliases:
+          - datapusher
+          - push
+    restart: unless-stopped
+
+  db:
+    container_name: db
+    hostname: db
+    build:
+      context: ../../
+      dockerfile: contrib/docker/postgresql/Dockerfile
+      args:
+        - DS_RO_PASS=${DATASTORE_READONLY_PASSWORD}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    environment:
+      - DS_RO_PASS=${DATASTORE_READONLY_PASSWORD}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      backend:
+        ipv4_address: 10.77.0.23
+        aliases:
+          - db
+          - database
+          - postgres
+          - postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+
+  solr:
+    container_name: solr
+    hostname: solr
+    build:
+      context: ../../
+      dockerfile: contrib/docker/solr/Dockerfile
+    volumes:
+      - solr_data:/opt/solr/server/solr/ckan/data
+    networks:
+      backend:
+        ipv4_address: 10.77.0.24
+        aliases:
+          - solr
+
+  redis:
+    container_name: redis
+    hostname: redis    
+    image: redis:latest
+    expose: 
+      - 6379
+    ports:
+      - 6379:6379
+    volumes:
+      - cache_data:/data
+    networks:
+      backend:
+        ipv4_address: 10.77.0.25
+        aliases: 
+          - redis
+          - cache
+    command: ["redis-server", "--appendonly", "yes"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli","ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5

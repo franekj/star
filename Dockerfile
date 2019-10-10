@@ -44,6 +44,7 @@ RUN mkdir -p $CKAN_VENV $CKAN_CONFIG $CKAN_STORAGE_PATH && \
 
 # Setup CKAN
 ADD . $CKAN_VENV/src/ckan/
+RUN git clone https://github.com/ckan/ckanext-scheming.git $CKAN_VENV/src/ckan/ckanext-scheming
 RUN mv $CKAN_VENV/src/ckan/ckanext-mzp $CKAN_VENV/src
 RUN mv $CKAN_VENV/src/ckan/ckanext-scheming $CKAN_VENV/src
 RUN mv $CKAN_VENV/src/ckan/ckanext-hierarchy $CKAN_VENV/src
